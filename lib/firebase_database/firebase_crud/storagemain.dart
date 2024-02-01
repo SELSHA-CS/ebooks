@@ -190,6 +190,7 @@ class _FireBaseCRUDState extends State<FireBaseCRUD> {
   Future<void> updateUser(String userId, String uname, String uemail) async{
     var updatevalues = {"name":uname, "email":uemail};
     return _userCollection.doc(userId).update(updatevalues).then((value){
+      Navigator.of(context).pop();
       print("User data updated succesffully");
     }).catchError((error){
       print("User data updating failed");
@@ -203,6 +204,6 @@ class _FireBaseCRUDState extends State<FireBaseCRUD> {
       );
     }).catchError((error){
       print("User deletion failed $error");
-    });
+    }); 
   }
 }
