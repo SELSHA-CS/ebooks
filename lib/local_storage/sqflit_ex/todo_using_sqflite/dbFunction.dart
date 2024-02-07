@@ -26,4 +26,25 @@ class SQLHelper{
     final id = await db.insert('task', data);
     return id;
   }
+  static Future<List<Map<String, dynamic>>> readTask() async{
+    final db = await SQLHelper.openOrCreateDB();
+    return db.query('task', orderBy: 'id');
+  }
+
+  static Future<int> update(int id, String utitle, String ucontent) async{
+    final db = await SQLHelper.openOrCreateDB();
+    var udata = {'title' : utitle, 'content' : ucontent};
+    final uid = await db.update('task', udata, where: 'id = ?', whereArgs: [id]);
+    return uid;
+  }
+
+  static Future<void> deleteTask(int id) async{
+    final db = await SQLHelper.openOrCreateDB();
+    try{
+      await db.delete('task', where: 'id = ?', whereArgs: [id]);
+    }
+    catch(e){
+      throw Exception();
+    }
+  }
 }

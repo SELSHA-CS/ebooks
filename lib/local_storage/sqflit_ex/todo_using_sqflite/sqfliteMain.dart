@@ -1,5 +1,6 @@
 import 'package:ebooks/local_storage/sqflit_ex/todo_using_sqflite/dbFunction.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 void main(){
   runApp(
@@ -20,6 +21,23 @@ class _MyToDoState extends State<MyToDo> {
 
   final ctitle = TextEditingController();
   final ccontent = TextEditingController();
+  bool isLoading = true;
+
+  var tasks = []; // to store task from sqflite returned by readtask method
+
+  @override
+  void initState() {
+    loadTask();
+    super.initState();
+  }
+
+  Future<void> loadTask() async{
+    final tsk = await SQLHelper.readTask();
+    setState(() {
+      tasks = tsk;
+      isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +46,54 @@ class _MyToDoState extends State<MyToDo> {
         backgroundColor: Colors.purple,
         title: Text("ToDo"),
       ),
-      body: Column(),
+      body: isLoading ? Center(child: Lottie.asset("assets/animations/1.json")) : Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Text("MY TASK", style: TextStyle(
+              fontSize: 28,
+              fontStyle: FontStyle.italic,
+              color: Colors.purple,
+            ),),
+          ),
+          Expanded(
+            child: GridView.builder(
+              itemCount: tasks.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2), 
+              itemBuilder: (context, index) {
+                return Card(
+                  child: Column(
+                    children: [
+                      Icon(Icons.calendar_today_outlined, color: Colors.purple, size: 28,),
+                      Text(tasks[index]['title'], style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.purple
+                      ),),
+                      SizedBox(height: 10,),
+                      Text(tasks[index]['content'], style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.purple
+                      ),),
+                      SizedBox(height: 30,),
+                      Wrap(
+                        children: [
+                          IconButton(onPressed: () => showSheet(tasks[index]['id']), icon: Icon(Icons.edit)),
+                          IconButton(onPressed: () async{
+                            await SQLHelper.deleteTask(tasks[index]['id']);
+                            loadTask();
+                          }, icon: Icon(Icons.delete)),
+                        ],
+                      )
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => showSheet(null),
         backgroundColor: Colors.purple, 
@@ -37,6 +102,11 @@ class _MyToDoState extends State<MyToDo> {
   }
   
   void showSheet(int? id) async{
+    if(id  != null){
+      final existingData = tasks.firstWhere((element) => element['id'] == id);
+      ctitle.text = existingData['title'];
+      ccontent.text = existingData['content'];
+    }
     showModalBottomSheet(
       isScrollControlled: true,
       context: context, builder: (context){
@@ -71,11 +141,13 @@ class _MyToDoState extends State<MyToDo> {
                   createTask();
                   ctitle.text = "";
                   ccontent.text = "";
+                  Navigator.of(context).pop();
                 }
                 if(id  != null){
-                  //updateTask();
+                  updateTask(id, ctitle.text, ccontent.text);
                   ctitle.text = "";
                   ccontent.text = "";
+                  Navigator.of(context).pop();
                 }
               }, 
               child: Text(
@@ -90,5 +162,12 @@ class _MyToDoState extends State<MyToDo> {
   Future<void> createTask() async{
     var id = await SQLHelper.create(ctitle.text, ccontent.text);
     print(id);
+    loadTask(); //to updtae the ui or list whenever a task is added
   }
+  
+  Future<void> updateTask(int id, String utitle, String ucontent) async{
+    await SQLHelper.update(id, utitle, ucontent);
+    loadTask();
+  }
+  
 }
