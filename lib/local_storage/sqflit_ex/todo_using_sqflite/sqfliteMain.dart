@@ -23,7 +23,7 @@ class _MyToDoState extends State<MyToDo> {
   final ccontent = TextEditingController();
   bool isLoading = true;
 
-  var tasks = []; // to store task from sqflite returned by readtask method
+  var tasks = []; /// empty-list to store task from sqflite returned by readtask method
 
   @override
   void initState() {
@@ -46,7 +46,7 @@ class _MyToDoState extends State<MyToDo> {
         backgroundColor: Colors.purple,
         title: Text("ToDo"),
       ),
-      body: isLoading ? Center(child: Lottie.asset("assets/animations/1.json")) : Column(
+      body: isLoading == true ? Center(child: Lottie.asset("assets/animations/1.json")) : Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(12.0),
@@ -108,7 +108,7 @@ class _MyToDoState extends State<MyToDo> {
       ccontent.text = existingData['content'];
     }
     showModalBottomSheet(
-      isScrollControlled: true,
+      isScrollControlled: true, 
       context: context, builder: (context){
       return Container(
         padding: EdgeInsets.only(

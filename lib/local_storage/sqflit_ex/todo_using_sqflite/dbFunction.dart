@@ -20,15 +20,18 @@ class SQLHelper{
     );
   }
 
+  ///insert values into table
   static Future<int> create(String title, String content) async{
     final db = await SQLHelper.openOrCreateDB(); //to open database
     var data = {'title' : title, 'content' : content};
     final id = await db.insert('task', data);
     return id;
   }
+
+  ///to fetch and read values from table
   static Future<List<Map<String, dynamic>>> readTask() async{
     final db = await SQLHelper.openOrCreateDB();
-    return db.query('task', orderBy: 'id');
+    return db.query('task', orderBy: 'id'); ///query() & rawQuery() - built in fn to read values from table
   }
 
   static Future<int> update(int id, String utitle, String ucontent) async{
