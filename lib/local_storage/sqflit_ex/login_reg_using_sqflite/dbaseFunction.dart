@@ -1,3 +1,4 @@
+import 'package:flutter/src/widgets/editable_text.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 
 class SQLHelpers{
@@ -58,5 +59,15 @@ class SQLHelpers{
     catch(e){
       throw Exception();
     }
+  }
+
+  static Future<int> update(int id, String upName, String upEmail) async{
+    var db = await SQLHelpers.openOrCreateDB();
+    final datas = {
+      'name' : upName,
+      'emailid' : upEmail,
+    };
+    final ids = await db.update('users', datas, where: 'id = ?', whereArgs: [id]);
+    return ids;
   }
 }

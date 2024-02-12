@@ -1,17 +1,35 @@
 import 'package:ebooks/local_storage/sqflit_ex/login_reg_using_sqflite/dbaseFunction.dart';
 import 'package:flutter/material.dart';
 
-class UserHome extends StatelessWidget {
+class UserHome extends StatefulWidget {
   final data;
   const UserHome({super.key, required this.data});
 
   @override
+  State<UserHome> createState() => _UserHomeState();
+}
+
+class _UserHomeState extends State<UserHome> {
+
+  var uName = TextEditingController();
+  var uEmail = TextEditingController();
+  var userName;
+  var userEmail;
+
+  @override
+  void initState(){
+    userName  = widget.data[0]['name'];
+    userEmail = widget.data[0]['emailid'];
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-
-    var uName = TextEditingController();
-    var uEmail = TextEditingController();
-
     void editUser() {
+      setState(() {
+        uName.text = userName;
+        uEmail.text = userEmail;
+      });
       showDialog(context: context, builder: (context){
         return AlertDialog(
           title: Center(child: Text("Edit User")),
@@ -44,7 +62,14 @@ class UserHome extends StatelessWidget {
               ),
               SizedBox(height: 20,),
               MaterialButton(
-                onPressed: (){},
+                onPressed: () {
+                  setState(() {
+                    userName = uName.text;
+                    userEmail = uEmail.text;
+                  });
+                  updateUser();
+                  Navigator.of(context).pop();
+                },
                 color: Colors.black26,
                 minWidth: 100,
                 height: 50,
@@ -56,8 +81,6 @@ class UserHome extends StatelessWidget {
       });
     }
 
-    var userName  = data[0]['name'];
-    var userEmail = data[0]['emailid'];
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFFFFFDD0),
@@ -72,11 +95,14 @@ class UserHome extends StatelessWidget {
           trailing: IconButton(
             onPressed: (){
               editUser();
-            }, 
+            },
             icon: Icon(Icons.edit),
           ),
         ),
       )
     );
+  }
+  void updateUser() async{
+    await SQLHelpers.update(widget.data[0]['id'], userName, userEmail);
   }
 }
