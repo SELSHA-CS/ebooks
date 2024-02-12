@@ -49,4 +49,14 @@ class SQLHelpers{
     );
     return allUsers;
   }
+
+  static Future<void> deleteUser(int id) async{
+    final db = await SQLHelpers.openOrCreateDB();
+    try{
+      await db.delete('users', where: 'id = ?', whereArgs: [id]);
+    }
+    catch(e){
+      throw Exception();
+    }
+  }
 }

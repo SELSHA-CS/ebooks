@@ -51,7 +51,12 @@ class _AdminHomeState extends State<AdminHome> {
                   ),
                   title: Text(users[index]['name']),
                   subtitle: Text(users[index]['emailid']),
-                  trailing: IconButton(onPressed: (){}, icon: Icon(Icons.delete)),
+                  trailing: IconButton(
+                    onPressed: () async{
+                      await SQLHelpers.deleteUser(users[index]["id"]);
+                      loadTask();
+                    }, 
+                    icon: Icon(Icons.delete)),
                 ),
               );
             },
