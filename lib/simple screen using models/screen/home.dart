@@ -6,15 +6,26 @@ import 'package:provider/provider.dart';
 
 void main(){
   runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: ChangeNotifierProvider(
-        create: (context) => NewsProvider(),
-        child: NewsScreen(),
-      ),
-    ),
+    ChangeNotifierProvider(create: (context) => NewsProvider(),
+    child: MyApp(),
+    )
   );
 }
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      // theme: ThemeData(
+      //   primarySwatch: Colors.blue
+      // ),
+      debugShowCheckedModeBanner: false,
+      home: NewsScreen(),
+    );
+  }
+
+}
+
 class NewsScreen extends StatelessWidget {
   
   // final List<News> newsList = [
@@ -41,7 +52,15 @@ class NewsScreen extends StatelessWidget {
             Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => WishListPage())
             );
-          }, icon: Icon(Icons.favorite))
+          }, 
+            icon: Consumer(
+              builder: (BuildContext context, NewsProvider newsProvider, Widget? child) { 
+                return Icon(Icons.favorite,
+                  color: newsProvider.wishList_news.isNotEmpty ? Colors.red : Colors.black,
+                );
+               },
+            )
+          )
         ],
       ),
       body: Consumer<NewsProvider>(

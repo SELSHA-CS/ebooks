@@ -6,19 +6,6 @@ import 'package:provider/provider.dart';
 class WishListPage extends StatelessWidget {
   const WishListPage({super.key});
 
-  // Consumer<NewsProvider>(
-  //           builder: (BuildContext context,NewsProvider newsProvider, Widget? child) { 
-  //             var selectedNews = newsProvider.newsL;
-  //             return IconButton(onPressed: (){
-  //             Navigator.of(context).push(MaterialPageRoute(builder: (context) => WishListPage()));
-  //           }, icon: Icon(
-  //             Icons.favorite,
-  //             color: newsProvider.wishList_news.contains(selectedNews) ? Colors.red : Colors.grey,
-  //           ));
-  //            },
-  //         )
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +17,7 @@ class WishListPage extends StatelessWidget {
           return ListView.builder(
             itemCount: newsProvider.wishList_news.length,
             itemBuilder: (context, index){
-              var selectedNews = newsProvider.newsL;
+              var selectedNews = newsProvider.wishList_news[index];
               return ListTile(
                 leading: CachedNetworkImage(
                   imageUrl: newsProvider.wishList_news[index].imageUrl,
@@ -47,9 +34,16 @@ class WishListPage extends StatelessWidget {
                   color: Colors.grey,
                 ),),
                 trailing: IconButton(
-                  onPressed: (){}, 
+                  onPressed: (){
+                    if(!newsProvider.wishList_news.contains(selectedNews)){
+                      newsProvider.addToWishList(selectedNews);
+                    }
+                    else{
+                      newsProvider.removeFromWishList(selectedNews);
+                    }
+                  }, 
                   icon: Icon(
-                    Icons.favorite, color: Colors.red,
+                    Icons.favorite, color: newsProvider.wishList_news.contains(selectedNews) ? Colors.red : Colors.grey,
                   )
                 ),
               );
