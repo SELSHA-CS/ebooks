@@ -1,13 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ebooks/simple%20screen%20using%20models/provider/newsProvider.dart';
+import 'package:ebooks/simple%20screen%20using%20models/provider/theme_provider.dart';
 import 'package:ebooks/simple%20screen%20using%20models/screen/wishlistpage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main(){
   runApp(
-    ChangeNotifierProvider(create: (context) => NewsProvider(),
-    child: MyApp(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => NewsProvider()),
+        ChangeNotifierProvider(create: (context) => ThemeProvider())
+      ],
+      child: MyApp(),
     )
   );
 }
@@ -16,9 +21,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // theme: ThemeData(
-      //   primarySwatch: Colors.blue
-      // ),
+      title: "Provider",
+      theme: Provider.of<ThemeProvider>(context).darkTheme ? ThemeData.dark() : ThemeData.light(),
+      darkTheme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
       home: NewsScreen(),
     );
@@ -43,6 +48,16 @@ class NewsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: Consumer(
+          builder: (BuildContext context, ThemeProvider themeProvider, Widget? child) { 
+            return IconButton(
+              onPressed: (){
+                themeProvider.switchTheme();
+              }, 
+              icon: Icon(themeProvider.darkTheme ? Icons.dark_mode : Icons.light_mode)
+            );
+          },
+        ),
         backgroundColor: Colors.blue,
         title: Center(child: Text("News (3064)", style: TextStyle(
           color: Colors.white, fontWeight: FontWeight.bold
